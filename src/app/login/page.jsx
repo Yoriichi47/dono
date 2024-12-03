@@ -1,10 +1,19 @@
 "use client"
-import React from "react";
+import React, { useEffect } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const login = () => {
-  return (
-    <div className="text-white p-2 container mx-auto py-20 w-full">
+  const{data: session} = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if(session){
+      router.push("/dashboard");
+    }   
+  }, [session, router])
+    return (
+      <div className="text-white p-2 container mx-auto py-20 w-full">
       <div className="p-2 text-center">
         <h2 className="text-3xl font-bold">Login to get started!!!</h2>
         <div className="flex flex-col gap-3 min-h-screen items-center p-10">
@@ -79,7 +88,7 @@ const login = () => {
                   id="container"
                   transform="translate(2.000000, 2.000000)"
                   fillRule="nonzero"
-                >
+                  >
                   <rect
                     id="mask"
                     stroke="#000000"
@@ -110,7 +119,7 @@ const login = () => {
               xmlnsXlink="http://www.w3.org/1999/xlink"
               viewBox="-1.5 0 20 20"
               version="1.1"
-            >
+              >
               <g
                 id="Page-1"
                 stroke="none"
@@ -140,5 +149,6 @@ const login = () => {
     </div>
   );
 };
+
 
 export default login;
