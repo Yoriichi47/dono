@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const Navbar = () => {
   const localSignOut = () => {
     signOut({callbackUrl: '/'});
   }
+  
   const { data: session } = useSession();
   return (
     <nav className="flex items-center justify-between px-6 bg-gray-950 h-16 text-white">

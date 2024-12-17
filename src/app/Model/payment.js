@@ -36,4 +36,4 @@
 //     }
 // })
 
-// export default mongoose.model.Payment || model("Payment", paymentSchema)
+// export default mongoose.model.Payment || mongoose.model("Payment", paymentSchema)

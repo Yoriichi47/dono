@@ -8,24 +8,24 @@ const Dashboard = () => {
   const router = useRouter();
   const [form, setForm] = useState({});
 
-  const loginPageSend = () => {
-    setTimeout(() => {
-      router.push("/login");
-    }, 1100);
-  };
+  // const loginPageSend = () => {
+  //   setTimeout(() => {
+  //     router.push("/login");
+  //   }, 1100);
+  // };
 
-  useEffect(() => {
-    if (!session) {
-      loginPageSend();
-    } else {
-      getData();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!session) {
+  //     loginPageSend();
+  //   } else {
+  //     getData();
+  //   }
+  // }, []);
 
-  const getData = async () => {
-    let user = await fetchUser(session.user.name);
-    setForm(user);
-  };
+  // const getData = async () => {
+  //   let user = await fetchUser(session.user.name);
+  //   setForm(user);
+  // };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,14 +35,14 @@ const Dashboard = () => {
     let a = await updateProfile(e, session.user.name);
   };
 
-  if (!session) {
-    return (
-      <div className="text-white">
-        <h1>Redirecting to login page</h1>
-        {loginPageSend()}
-      </div>
-    );
-  }
+  // if (!session) {
+  //   return (
+  //     <div className="text-white">
+  //       <h1>Redirecting to login page</h1>
+  //       {loginPageSend()}
+  //     </div>
+  //   );
+  // }
   return (
     <>
       <div className="container mx-auto py-5 px-6 ">

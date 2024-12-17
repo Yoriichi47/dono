@@ -1,40 +1,36 @@
-// import mongoose, { model, Schema } from "mongoose";
+// import mongoose from "mongoose";
+// import { connectDB } from "../db/mongodb";
 
-// const userSchema = new Schema({
+// const userSchema = new mongoose.Schema(
+//   {
 //     email: {
-//         type: String,
-//         required: true,
-//         unique: true,
+//       type: String,
+//       required: true,
+//       unique: true,
 //     },
 //     name: {
-//         type: String,
-//         required: true,
+//       type: String,
+//       required: true,
 //     },
 //     username: {
-//         type: String,
-//         required: true,
-//         unique: true,
-//     },
-//     createdAt: {
-//         type: Date,
-//         default: Date.now,
-//     },
-//     updatedAt: {
-//         type: Date,
-//         default: Date.now,
+//       type: String,
+//       required: true,
+//       unique: true,
 //     },
 //     profilePic: {
-//         type: String, // Type is string cuz it wil be passed as a url
-//         default: "",
+//       type: String, // Type is string cuz it wil be passed as a url
+//       default: "",
 //     },
 //     coverPic: {
-//         type: String, // Type is string cuz it wil be passed as a url
-//         default: "",
+//       type: String, // Type is string cuz it wil be passed as a url
+//       default: "",
 //     },
-// })
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
 
-// // var User = model("User", userSchema)
+// const User =  mongoose.models.User || mongoose.model("User", userSchema);
 
-// // export default User
-
-// export default mongoose.models.User || model("User", userSchema)
+// export default User
