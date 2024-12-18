@@ -16,6 +16,7 @@ const Navbar = () => {
       </div>
       <div>
         {session && (
+          <>
           <Link href="/dashboard">
             <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500  text-white ring-blue-800 mr-2">
               <span className="relative px-3 py-1 transition-all ease-in duration-75 hover:opacity-95 bg-gray-900 rounded-md ">
@@ -23,6 +24,14 @@ const Navbar = () => {
               </span>
             </button>
           </Link>
+          <Link href={`/${session.user.name}`}>
+            <button className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500  text-white ring-blue-800 mr-2">
+              <span className="relative px-3 py-1 transition-all ease-in duration-75 hover:opacity-95 bg-gray-900 rounded-md ">
+                Account
+              </span>
+            </button>
+          </Link>
+          </>
         )}
         {session && (
           <button
