@@ -12,12 +12,14 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
-  username      String    @unique 
+  username      String?   @unique
   emailVerified DateTime?
   profilePic    String?   @default("")
   coverPic      String?   @default("")
-  accounts      Account[]
-  sessions      Session[]
+
+  accounts Account[]
+  sessions Session[]
+  payments Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,4 +68,15 @@ model VerificationToken {
 
   @@id([identifier, token])
   @@map("verification_tokens")
+}
+
+model Payment {
+  name      String   @id @default(cuid())
+  order_id  String
+  userId    String
+  to_user   User     @relation(fields: [userId], references: [id])
+  // message String
+  amount    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
