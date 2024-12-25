@@ -6,31 +6,45 @@ import { CheckoutForm } from "../components/checkoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { createPaymentIntent } from "../actions/paymentIntent";
 
-const UsernamePage = ({username}) => {
+const UsernamePage = ({ username, name }) => {
   const [showcheckout, setShowcheckout] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
-  const [amount, setAmount] = useState("")
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
 
   const intAmount = parseInt(amount);
+  const messageField = toString(message);
+
   const { data: session } = useSession();
+  const nameField = `Paying to ${name}`;
 
   const handleAmountChange = (event) => {
     setAmount(event.target.value);
-  }
+  };
+
+  const handleMesageChange = (event) => {
+    setMessage(event.target.value);
+  };
 
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
   const initiatePayment = async () => {
     setShowcheckout(true);
 
-    if (intAmount <= 0) {
-      alert("Please enter a valid amount greater than 0.");
-      return; 
-  }
+    if (intAmount <= 1) {
+      alert("Please enter a valid amount greater than 1.");
+      return;
+    }
+
+    if (!message) {
+      alert("Please enter a message");
+      return;
+    }
 
     const paymentIntent = await createPaymentIntent(
       intAmount * 100,
-      session.user.id
+      session.user.id,
+      messageField
     );
     setClientSecret(paymentIntent.client_secret);
   };
@@ -52,8 +66,13 @@ const UsernamePage = ({username}) => {
             alt=""
           />
           <div className="text-center my-auto">
-            <h1 className="text-2xl font-bold ">@{username}</h1>
-            <p className="mt-2 text-gray-400">1000 followers, 1,000 posts</p>
+            <h2 className="font-bold text-left text-gray-200 text-2xl">
+              {name}
+            </h2>
+            <h3 className="text-sm my-1 text-gray-500 text-left">
+              @{username}
+            </h3>
+            <p className="text-gray-400">1000 followers, 1,000 posts</p>
           </div>
         </div>
       </div>
@@ -76,13 +95,14 @@ const UsernamePage = ({username}) => {
                 <input
                   className="rounded-lg md:text-sm focus:outline-none focus:outline-gray-700 bg-gray-800 text-white p-2 my-2 w-5/6"
                   type="text"
-                  placeholder="Enter your name"
+                  disabled
+                  placeholder={nameField}
                 />
                 <input
                   className="rounded-lg text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:outline-gray-700 w-1/6 md:text-sm bg-gray-800 text-white p-2 px-3 my-2"
                   value={amount}
                   type="number"
-                  min={5}
+                  min={1}
                   onChange={handleAmountChange}
                   placeholder="$5"
                 />
@@ -90,6 +110,9 @@ const UsernamePage = ({username}) => {
               <input
                 className="rounded-lg focus:outline-none focus:outline-gray-700 bg-gray-800 text-white p-2 my-2 w-full"
                 type="text"
+                required
+                onChange={handleMesageChange}
+                value={message}
                 placeholder="Enter the message"
               />
 

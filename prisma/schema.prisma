@@ -75,7 +75,7 @@ model Payment {
   order_id  String
   userId    String
   to_user   User     @relation(fields: [userId], references: [id])
-  // message String
+  message String  @default("")
   amount    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

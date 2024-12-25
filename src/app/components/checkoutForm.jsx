@@ -1,15 +1,16 @@
-import { useSession } from "next-auth/react";
 import { AddressElement, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React from "react";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { savePayment } from "../actions/SavePayment";
+import { useSession } from "next-auth/react";
 
-export function CheckoutForm({ show, setShow }) {
+export function CheckoutForm({ show, setShow, message }) {
 
     const stripe = useStripe()
     const elements = useElements()
     const {data: session} = useSession()
-    const username = session.user.username
+    const name = session.user.name
+    const username = encodeURIComponent(name)
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,14 +26,23 @@ export function CheckoutForm({ show, setShow }) {
             })
 
             if(result.error){
-                toast.error(result.error.message)
                 console.log(result.error.message)
             } else {
-                toast.success("Payment successful")
+              console.log(result.paymentIntent)
+                const saveResult = await savePayment({
+                  paymentId: result.paymentIntent.id, 
+                  userId: session.user.id,
+                  message: message
+                })
+                if(saveResult.success){
+                    console.log("Payment saved", saveResult.payment)
+                } else {
+                  console.error("Payment not saved", saveResult.error)
+                }
             }
 
         } catch (error) {
-            console.error(error)   
+            console.error(`Error in submit handle: ${error}`)   
         }
     }
 

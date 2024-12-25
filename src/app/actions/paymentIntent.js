@@ -3,24 +3,19 @@
 import { auth } from "@/auth";
 import Stripe from "stripe";
 
-export const createPaymentIntent = async (amount) => {
+export const createPaymentIntent = async (amount, message) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  const session = await auth()
+  const session = await auth();
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     currency: "CAD",
-  });
-
-  await prisma.payment.create({
-    data: {
-      order_id: paymentIntent.id,
-      amount: amount,
+    metadata: {
       userId: session.user.id,
-    },
+      message
+    }
   });
-  console.log("Payment data added");
-  console.log("User Id: ", session.user.id);    
+  
   return paymentIntent;
 };

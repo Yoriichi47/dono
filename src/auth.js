@@ -9,4 +9,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google, GitHub],
   secret: process.env.AUTH_SECRET,
   // debug: true,
+  callbacks: {
+    async signIn({user, account, profile}){
+      let newUsername = user.email.split('@')[0];
+      await prisma.user.update({
+        where: {email: user.email},
+        data: {username: newUsername}
+      })
+      return true
+    }
+  }
 });
