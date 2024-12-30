@@ -1,23 +1,32 @@
 "use server";
 
 import { prisma } from "@/prisma";
+import { auth } from "@/auth";
 
-export const savePayment = async ({ paymentId, userId, message }) => {
+export const savePayment = async ({
+  amount,
+  paymentId,
+  userId,
+  description,
+}) => {
+  const session = await auth();
 
   try {
-    await prisma.payments.create({
+    await prisma.payment.create({
       data: {
-        paymentId,
-        message,
-        user: {
+        amount: amount,
+        order_id: paymentId,
+        message: description,
+        to_user: {
           connect: {
             id: userId,
           },
         },
       },
     });
+    return { success: true };
   } catch (error) {
-    console.error("Error saving to the DB: ", error);
+    console.log("Error saving to the DB: ", error.stack);
+    return { success: false, error: error.message };
   }
 };
-

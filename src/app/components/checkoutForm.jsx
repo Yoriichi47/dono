@@ -1,50 +1,62 @@
-import { AddressElement, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import {
+  AddressElement,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
 import React from "react";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { savePayment } from "../actions/SavePayment";
+import { savePayment } from "@/app/actions/SavePayment";
 import { useSession } from "next-auth/react";
+import { auth } from "@/auth";
 
 export function CheckoutForm({ show, setShow, message }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { data: session } = useSession();
+  const name = session.user.name;
+  const userId = session.user?.id;
+  const username = encodeURIComponent(name);
 
-    const stripe = useStripe()
-    const elements = useElements()
-    const {data: session} = useSession()
-    const name = session.user.name
-    const username = encodeURIComponent(name)
+  const loader = () => {
+    setTimeout(() => {
+      return true;
+    }, 3000);
+  };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            if(!elements || !stripe){
-                return
-            }
-            const result = await stripe?.confirmPayment({
-                elements,
-                confirmParams: {
-                        return_url: `http://localhost:3000/${username}`,
-                },
-            })
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      if (!elements || !stripe) {
+        toast.error("Stripe not loaded");
+        return;
+      }
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `http://localhost:3000/${username}`,
+        },
+        redirect: "if_required",
+      });
 
-            if(result.error){
-                console.log(result.error.message)
-            } else {
-              console.log(result.paymentIntent)
-                const saveResult = await savePayment({
-                  paymentId: result.paymentIntent.id, 
-                  userId: session.user.id,
-                  message: message
-                })
-                if(saveResult.success){
-                    console.log("Payment saved", saveResult.payment)
-                } else {
-                  console.error("Payment not saved", saveResult.error)
-                }
-            }
+      if (result.error) {
+        toast.error(result.error.message);
+      } else {
+        toast.success("Payment Successful");
 
-        } catch (error) {
-            console.error(`Error in submit handle: ${error}`)   
-        }
+        await savePayment({
+          amount: result.paymentIntent.amount,
+          paymentId: result.paymentIntent.id,
+          userId: userId,
+          description: message,
+        });
+      }
+    } catch (error) {
+      toast.error(`Error in submit handle: ${error}`);
+      return `Error in submit handle: ${error}`;
     }
+  };
 
   return (
     <>
@@ -52,17 +64,15 @@ export function CheckoutForm({ show, setShow, message }) {
         className="w-[100%] mt-2 p-4 rounded-xl bg-white text-black"
         style={{ display: show ? "block" : "none" }}
       >
+        <ToastContainer />
         <h2 className="p-1 font-semibold px-3">Continue the Payment</h2>
         <div>
           <form onSubmit={handleSubmit} className="w-[100%]">
             <PaymentElement />
-            <AddressElement options={{
-                mode: 'billing',
-                required: true,
-            }} />
             <div className="flex flex-row-reverse gap-3 mt-4">
               <button
                 type="submit"
+                onClick={() => loader()}
                 className="rounded-lg w-[50%] py-2 bg-blue-800 text-white"
               >
                 Confirm

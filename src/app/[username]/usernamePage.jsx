@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutForm } from "../components/checkoutForm";
 import { Elements } from "@stripe/react-stripe-js";
@@ -13,14 +12,13 @@ const UsernamePage = ({ username, name }) => {
   const [message, setMessage] = useState("");
 
   const intAmount = parseInt(amount);
-  const messageField = toString(message);
-
-  const { data: session } = useSession();
-  const nameField = `Paying to ${name}`;
+  const nameField = `Paying to ${name}.`;
 
   const handleAmountChange = (event) => {
     setAmount(event.target.value);
   };
+
+  
 
   const handleMesageChange = (event) => {
     setMessage(event.target.value);
@@ -43,10 +41,10 @@ const UsernamePage = ({ username, name }) => {
 
     const paymentIntent = await createPaymentIntent(
       intAmount * 100,
-      session.user.id,
-      messageField
+      message
     );
     setClientSecret(paymentIntent.client_secret);
+    setShowcheckout(true);
   };
 
   return (
@@ -76,7 +74,7 @@ const UsernamePage = ({ username, name }) => {
           </div>
         </div>
       </div>
-      <div className="gap-4 flex flex-col">
+      <div className="gap-4 flex flex-col mx-3">
         <div className="border supporters p-3 my-3">
           <h1 className="text-2xl mb-1 underline font-bold">Supporters</h1>
           <div className="border-t pt-2 supportList">
@@ -102,6 +100,7 @@ const UsernamePage = ({ username, name }) => {
                   className="rounded-lg text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:outline-gray-700 w-1/6 md:text-sm bg-gray-800 text-white p-2 px-3 my-2"
                   value={amount}
                   type="number"
+                  required
                   min={1}
                   onChange={handleAmountChange}
                   placeholder="$5"
@@ -127,7 +126,7 @@ const UsernamePage = ({ username, name }) => {
                   stripe={stripePromise}
                   options={{ clientSecret: clientSecret }}
                 >
-                  <CheckoutForm show={showcheckout} setShow={setShowcheckout} />
+                  <CheckoutForm show={showcheckout} setShow={setShowcheckout} message={message} />
                 </Elements>
               )}
             </div>
