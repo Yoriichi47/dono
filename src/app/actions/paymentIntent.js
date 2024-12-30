@@ -8,9 +8,9 @@ export const createPaymentIntent = async (amount, description) => {
 
   const session = await auth();
 
-  if (isNaN(amount) || amount <= 0) {
-    throw new Error("Invalid amount. Amount must be a positive integer.");
-  }
+  // if (isNaN(amount) || amount <= 0) {
+  //   throw new Error("Invalid amount. Amount must be a positive integer.");
+  // }
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({

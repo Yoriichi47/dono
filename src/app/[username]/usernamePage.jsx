@@ -1,15 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutForm } from "../components/checkoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { createPaymentIntent } from "../actions/paymentIntent";
+import { useRouter } from "next/navigation";
 
 const UsernamePage = ({ username, name }) => {
   const [showcheckout, setShowcheckout] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter()
+
+  const resetForm = () => {
+    setAmount("");
+    setMessage("");
+  }
+  
 
   const intAmount = parseInt(amount);
   const nameField = `Paying to ${name}.`;
@@ -17,8 +25,6 @@ const UsernamePage = ({ username, name }) => {
   const handleAmountChange = (event) => {
     setAmount(event.target.value);
   };
-
-  
 
   const handleMesageChange = (event) => {
     setMessage(event.target.value);
@@ -29,7 +35,7 @@ const UsernamePage = ({ username, name }) => {
   const initiatePayment = async () => {
     setShowcheckout(true);
 
-    if (intAmount <= 1) {
+    if (!intAmount || intAmount <= 1) {
       alert("Please enter a valid amount greater than 1.");
       return;
     }
@@ -126,7 +132,7 @@ const UsernamePage = ({ username, name }) => {
                   stripe={stripePromise}
                   options={{ clientSecret: clientSecret }}
                 >
-                  <CheckoutForm show={showcheckout} setShow={setShowcheckout} message={message} />
+                  <CheckoutForm show={showcheckout} setShow={setShowcheckout} message={message} onPaymentSuccess={resetForm} />
                 </Elements>
               )}
             </div>

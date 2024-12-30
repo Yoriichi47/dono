@@ -9,9 +9,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { savePayment } from "@/app/actions/SavePayment";
 import { useSession } from "next-auth/react";
-import { auth } from "@/auth";
+import { useRouter } from "next/navigation";
 
-export function CheckoutForm({ show, setShow, message }) {
+export function CheckoutForm({ show, setShow, message, onPaymentSuccess }) {
   const stripe = useStripe();
   const elements = useElements();
   const { data: session } = useSession();
@@ -19,19 +19,11 @@ export function CheckoutForm({ show, setShow, message }) {
   const userId = session.user?.id;
   const username = encodeURIComponent(name);
 
-  const loader = () => {
-    setTimeout(() => {
-      return true;
-    }, 3000);
-  };
+  const router = useRouter()
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      if (!elements || !stripe) {
-        toast.error("Stripe not loaded");
-        return;
-      }
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -44,13 +36,16 @@ export function CheckoutForm({ show, setShow, message }) {
         toast.error(result.error.message);
       } else {
         toast.success("Payment Successful");
-
+        
         await savePayment({
           amount: result.paymentIntent.amount,
           paymentId: result.paymentIntent.id,
           userId: userId,
           description: message,
         });
+        if(onPaymentSuccess) onPaymentSuccess()
+        router.refresh()
+        setShow(false);
       }
     } catch (error) {
       toast.error(`Error in submit handle: ${error}`);
@@ -72,7 +67,7 @@ export function CheckoutForm({ show, setShow, message }) {
             <div className="flex flex-row-reverse gap-3 mt-4">
               <button
                 type="submit"
-                onClick={() => loader()}
+                // onClick={userPage}
                 className="rounded-lg w-[50%] py-2 bg-blue-800 text-white"
               >
                 Confirm
